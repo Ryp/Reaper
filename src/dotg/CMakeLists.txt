@@ -1,0 +1,51 @@
+set(REAPER_DOTG_LIBRARIES
+    ${REAPER_CORE_BIN})
+
+set(REAPER_DOTG_INCLUDES
+    ${CMAKE_SOURCE_DIR}/external)
+
+set(REAPER_DOTG_BIN reaper_dotg)
+set(REAPER_DOTG_BIN ${REAPER_DOTG_BIN} PARENT_SCOPE)
+
+set(REAPER_DOTG_DIR ${CMAKE_SOURCE_DIR}/src/dotg)
+set(REAPER_DOTG_SRCS
+    ${REAPER_DOTG_DIR}/DotGDriver.cpp
+    ${REAPER_DOTG_DIR}/DotGDriver.h
+    ${REAPER_DOTG_DIR}/DotGExport.h
+    ${REAPER_DOTG_DIR}/DotGParser.cpp
+    ${REAPER_DOTG_DIR}/DotGParser.h
+)
+
+find_package(BISON REQUIRED)
+find_package(FLEX REQUIRED)
+
+set(REAPER_BISON_TARGET dotg_parser)
+set(REAPER_FLEX_TARGET  dotg_lexer)
+
+set(REAPER_BISON_FILES  ${REAPER_DOTG_DIR}/Parser.y)
+set(REAPER_FLEX_FILES   ${REAPER_DOTG_DIR}/Lexer.l)
+
+bison_target(${REAPER_BISON_TARGET} ${REAPER_BISON_FILES} ${CMAKE_CURRENT_BINARY_DIR}/Parser.cpp DEFINES_FILE ${CMAKE_CURRENT_BINARY_DIR}/Parser.h VERBOSE bison_output.txt)
+flex_target(${REAPER_FLEX_TARGET} ${REAPER_FLEX_FILES} ${CMAKE_CURRENT_BINARY_DIR}/Lexer.cpp DEFINES_FILE ${CMAKE_CURRENT_BINARY_DIR}/Lexer.h)
+
+add_flex_bison_dependency(${REAPER_FLEX_TARGET} ${REAPER_BISON_TARGET})
+
+add_library(${REAPER_DOTG_BIN} ${REAPER_BUILD_TYPE}
+    ${REAPER_DOTG_SRCS}
+    ${BISON_${REAPER_BISON_TARGET}_OUTPUTS}
+    ${FLEX_${REAPER_FLEX_TARGET}_OUTPUTS})
+
+reaper_add_custom_build_flags(${REAPER_DOTG_BIN} "Renderer")
+
+target_include_directories(${REAPER_DOTG_BIN} PUBLIC ${CMAKE_SOURCE_DIR}/src)
+target_include_directories(${REAPER_DOTG_BIN} SYSTEM PUBLIC ${REAPER_DOTG_INCLUDES} ${CMAKE_CURRENT_BINARY_DIR})
+
+#Libraries
+target_link_libraries(${REAPER_DOTG_BIN} ${REAPER_DOTG_LIBRARIES})
+
+set_target_properties(${REAPER_DOTG_BIN} PROPERTIES COTIRE_CXX_PREFIX_HEADER_INIT ${REAPER_PCH})
+cotire(${REAPER_DOTG_BIN})
+
+if (REAPER_BUILD_TESTS)
+    reaper_add_test(${REAPER_DOTG_BIN} basic)
+endif()

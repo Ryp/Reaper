@@ -52,6 +52,7 @@ set(REAPER_VERSION_SHORT "${REAPER_VERSION_MAJOR}.${REAPER_VERSION_MINOR}.${REAP
 configure_file(${CMAKE_SOURCE_DIR}/src/core/Version.h.in ${CMAKE_SOURCE_DIR}/src/core/Version.h NEWLINE_STYLE LF)
 
 add_subdirectory(src/core)
+add_subdirectory(src/dotg)
 add_subdirectory(src/gamelogic)
 add_subdirectory(src/renderer)
 
