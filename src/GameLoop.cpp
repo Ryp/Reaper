@@ -11,7 +11,6 @@
 #include "renderer/vulkan/BackendResources.h"
 #include "renderer/vulkan/renderpass/TestGraphics.h"
 
-#include "renderer/Camera.h"
 #include "renderer/ExecuteFrame.h"
 #include "renderer/PrepareBuckets.h"
 #include "renderer/ResourceHandle.h"
@@ -22,6 +21,8 @@
 #include "math/Spline.h"
 #include "mesh/ModelLoader.h"
 #include "splinesonic/trackgen/Track.h"
+
+#include "Camera.h"
 
 #include <glm/gtc/matrix_transform.hpp>
 
